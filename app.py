@@ -22,7 +22,7 @@ class Recommendation():
         self.sp=spotipy.Spotify(auth=token)
         self.uri_playlist=uri_playlist
         self.id_playlist=id_playlist
-        self.usernmae=username
+        self.username=username
 
     def get_reco(self,artistSeeds,genres,trackSeeds):
         dataReco=self.sp.recommendations(seed_artists=artistSeeds,seed_genres=genres,seed_tracks=trackSeeds)
@@ -88,15 +88,15 @@ class Recommendation():
         date=datetime.datetime.now()
         nameP=str(date)[:19]
         
-        get_tracks=self.sp.user_playlist_tracks(user=username,playlist_id=self.uriPlaylist)
+        get_tracks=self.sp.user_playlist_tracks(user=self.username,playlist_id=self.uri_playlist)
         all_tracks=[]
         for track in get_tracks['items']:
             all_tracks.append(track['track']['uri'])
-        self.sp.user_playlist_remove_all_occurrences_of_tracks(user=username,playlist_id=self.uriPlaylist,tracks=all_tracks)
-        self.sp.user_playlist_change_details(user=self.username,playlist_id=self.idPlaylist,name=nameP)
-        self.sp.user_playlist_add_tracks(user=self.username,playlist_id=self.uriPlaylist,tracks=listReco)
+        self.sp.user_playlist_remove_all_occurrences_of_tracks(user=self.username,playlist_id=self.uri_playlist,tracks=all_tracks)
+        self.sp.user_playlist_change_details(user=self.username,playlist_id=self.id_playlist,name=nameP)
+        self.sp.user_playlist_add_tracks(user=self.username,playlist_id=self.uri_playlist,tracks=listReco)
 
-            
+           
     def getFeaturesMean(self,tracks):
         """
         Returns the mean of the features of the tracks
@@ -150,7 +150,9 @@ if __name__ == "__main__":
     listReco3=reco.get_reco(a_seeds[4:6],top_genres[2:3],t_seeds[4:6])
     listReco=listReco1+listReco2+listReco3
     shuffle(listReco)
-
+    
+    reco.update_playlist(listReco)
+    
     meanTempo,meanDance,meanLoudness,meanValence,meanEnergy,meanInstrumental,meanAcousticness,meanSpeech=reco.getFeaturesMean(listReco)
     title='Info Playlist, tempo moyen:'+str(meanTempo)
     plt.title(title)
